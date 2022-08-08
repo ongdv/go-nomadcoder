@@ -5,34 +5,16 @@ import (
 	"strings"
 )
 
-// name := "OngDV" // short form Only working on function
-// var name = "OngDV"
-
-// func multiply(a int, b int) int {
-// 	return a * b
-// }
-
-func lenAndUpper(name string) (int, string) {
-	return len(name), strings.ToUpper(name)
-}
-
-func repeatMe(words ...string) {
-	fmt.Println(words)
+func lenAndUpper(name string) (length int, uppercase string) {
+	// After function is done
+	defer fmt.Println("I'm done")
+	length = len(name)
+	uppercase = strings.ToUpper(name)
+	return
 }
 
 func main() {
-	// const
-	// const name string = "Ongdv"
-	// name = "ongdv94" // is not working
-
-	// variable
-	// name := "OngDV" //var name string = "OngDV"
-	// name = "ongdv94"
-
-	// fmt.Println(multiply(2, 2))
-	// totalLength, upperName := lenAndUpper("ongdv")
-	// totalLength, _ := lenAndUpper("ongdv") // _ is ignore value
-	// fmt.Println(totalLength, upperName)
-	repeatMe("ongdv", "kyeongwoo", "oh", "doubleO")
+	totalLength, up := lenAndUpper("ongdv")
+	fmt.Println(totalLength, up)
 
 }
