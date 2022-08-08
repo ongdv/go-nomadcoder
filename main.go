@@ -3,7 +3,10 @@ package main
 import "fmt"
 
 func main() {
-	names := []string{"ongdv", "bam", "ddong"}
-	names2 := append(names, "12")
-	fmt.Println(names, names2)
+	ongdv := map[string]string{"name": "ongdv", "age": "12"}
+
+	for key, value := range ongdv {
+		fmt.Println(key, value)
+	}
+	fmt.Println(ongdv)
 }
