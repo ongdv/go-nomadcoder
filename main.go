@@ -2,17 +2,14 @@ package main
 
 import "fmt"
 
-func superAdd(numbers ...int) (total int) {
-	total = 0
-	for _, number := range numbers {
-		total += number
+func canIDrink(age int) bool {
+	if koreanAge := age + 2; koreanAge < 18 {
+		return false
 	}
-	return
+	return true
 }
 
 func main() {
-	num := superAdd(1, 2, 3, 4, 5, 6, 7)
-
-	fmt.Println(num)
+	fmt.Println(canIDrink(16))
 
 }
