@@ -110,10 +110,10 @@ func getPages(url string) int {
 func extractJob(card *goquery.Selection, c chan<- extractedJob) {
 	id_path := card.Find(".jcs-JobTitle")
 	id, _ := id_path.Attr("data-jk")
-	title := cleanStrings(id_path.Find("a>span").Text())
-	location := cleanStrings(card.Find(".companyLocation").Text())
-	salary := cleanStrings(card.Find(".salary-snippet-container>div").Text())
-	summary := cleanStrings(card.Find(".job-snippet").Text())
+	title := CleanStrings(id_path.Find("a>span").Text())
+	location := CleanStrings(card.Find(".companyLocation").Text())
+	salary := CleanStrings(card.Find(".salary-snippet-container>div").Text())
+	summary := CleanStrings(card.Find(".job-snippet").Text())
 	c <- extractedJob{id: id, title: title, location: location, salary: salary, summary: summary}
 }
 
@@ -129,6 +129,6 @@ func checkCode(res *http.Response) {
 	}
 }
 
-func cleanStrings(str string) string {
+func CleanStrings(str string) string {
 	return strings.Join(strings.Fields(strings.TrimSpace(str)), " ")
 }
