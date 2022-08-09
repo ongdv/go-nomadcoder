@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -30,10 +32,31 @@ func main() {
 		jobs = append(jobs, extractedJobs...)
 	}
 
-	fmt.Println(jobs)
+	writeJobs(jobs)
+	fmt.Println("Done, Extracted", len(jobs))
+}
+
+func writeJobs(jobs []extractedJob) {
+	file, err := os.Create("jobs.csv")
+	checkErr(err)
+
+	w := csv.NewWriter(file)
+	defer w.Flush()
+
+	headers := []string{"ID", "Title", "Location", "Salary", "Summary"}
+
+	wErr := w.Write(headers)
+	checkErr(wErr)
+
+	for _, job := range jobs {
+		jobSlice := []string{"https://kr.indeed.com/viewjob?jk=51b4480aad895162" + job.id, job.title, job.location, job.salary, job.summary}
+		jwErr := w.Write(jobSlice)
+		checkErr(jwErr)
+	}
 }
 
 func getPage(page int) []extractedJob {
+	c := make(chan extractedJob)
 	var jobs []extractedJob
 	pageURL := baseURL + "&start=" + strconv.Itoa(page*50)
 	fmt.Println("Requesting", pageURL)
@@ -50,9 +73,14 @@ func getPage(page int) []extractedJob {
 	searchCards := doc.Find(".job_seen_beacon")
 
 	searchCards.Each(func(i int, card *goquery.Selection) {
-		job := extractJob(card)
-		jobs = append(jobs, job)
+		go extractJob(card, c)
 	})
+
+	for i := 0; i < searchCards.Length(); i++ {
+		job := <-c
+		jobs = append(jobs, job)
+	}
+
 	return jobs
 }
 
@@ -75,14 +103,14 @@ func getPages() int {
 	return pages
 }
 
-func extractJob(card *goquery.Selection) extractedJob {
+func extractJob(card *goquery.Selection, c chan<- extractedJob) {
 	id_path := card.Find(".jcs-JobTitle")
 	id, _ := id_path.Attr("data-jk")
 	title := cleanStrings(id_path.Find("a>span").Text())
 	location := cleanStrings(card.Find(".companyLocation").Text())
-	salary := card.Find(".salary-snippet-container>div").Text()
+	salary := cleanStrings(card.Find(".salary-snippet-container>div").Text())
 	summary := cleanStrings(card.Find(".job-snippet").Text())
-	return extractedJob{id: id, title: title, location: location, salary: salary, summary: summary}
+	c <- extractedJob{id: id, title: title, location: location, salary: salary, summary: summary}
 }
 
 func checkErr(err error) {
