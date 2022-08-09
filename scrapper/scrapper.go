@@ -89,6 +89,7 @@ func getPage(page int, url string, mainC chan<- []extractedJob) {
 }
 
 func getPages(url string) int {
+	fmt.Println(url)
 	pages := 0
 	res, err := http.Get(url)
 	checkErr(err)

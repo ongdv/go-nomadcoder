@@ -1,18 +1,23 @@
 package main
 
 import (
+	"os"
+
 	"github.com/labstack/echo/v4"
 	"github.com/ongdv/learngo/scrapper"
 )
+
+const fileName string = "jobs.csv"
 
 func handleHome(c echo.Context) error {
 	return c.File("./html/index.html")
 }
 
 func handleScrape(c echo.Context) error {
-	term := scrapper.CleanStrings(c.FormValue("terms"))
+	defer os.Remove(fileName)
+	term := scrapper.CleanStrings(c.FormValue("term"))
 	scrapper.Scrape(term)
-	return c.File("/html/index.html")
+	return c.Attachment(fileName, fileName)
 }
 
 func main() {
